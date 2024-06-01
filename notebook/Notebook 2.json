@@ -1,0 +1,325 @@
+{
+	"name": "Notebook 2",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "userdatapool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "56g",
+			"driverCores": 8,
+			"executorMemory": "56g",
+			"executorCores": 8,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "70b16583-3829-491b-8874-446c0adc8478"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"b5d1f976-5ffc-4128-8062-1425d485a15c": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "Datum",
+										"1": "Itemkey",
+										"2": "Itemvalue",
+										"3": "Itemtyp",
+										"4": "Domäne",
+										"5": "Modul",
+										"6": "Model",
+										"7": "User",
+										"8": "Session",
+										"9": "Version",
+										"10": "App",
+										"11": "Stadt",
+										"12": "Land",
+										"13": "Staat"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "Dataprovider",
+										"2": "SqlServer",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "RechnungsausgangsbuchAktiv",
+										"2": "F",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "MandatenbezugAktiv",
+										"2": "F",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "StringenterModusAktiv",
+										"2": "F",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "Emailprovider",
+										"2": "Simple MAPI",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "EmailproviderUser",
+										"2": "Simple MAPI",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "Bildschirmauflösung",
+										"2": "1920x1080",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "Skalierung",
+										"2": "100%",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									},
+									{
+										"0": "16.05.2024 13:09",
+										"1": "Bildschirmauflösung",
+										"2": "1920x1080",
+										"3": "Attribute",
+										"7": "2SD3FWW1TB",
+										"8": "0PZFMDKGVCPQ7IS",
+										"9": "24.1.24121.606",
+										"10": "Administration",
+										"11": "Eibenstein",
+										"12": "Niederoesterreich",
+										"13": "Austria"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "_c0",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "_c1",
+										"type": "string"
+									},
+									{
+										"key": "2",
+										"name": "_c2",
+										"type": "string"
+									},
+									{
+										"key": "3",
+										"name": "_c3",
+										"type": "string"
+									},
+									{
+										"key": "4",
+										"name": "_c4",
+										"type": "string"
+									},
+									{
+										"key": "5",
+										"name": "_c5",
+										"type": "string"
+									},
+									{
+										"key": "6",
+										"name": "_c6",
+										"type": "string"
+									},
+									{
+										"key": "7",
+										"name": "_c7",
+										"type": "string"
+									},
+									{
+										"key": "8",
+										"name": "_c8",
+										"type": "string"
+									},
+									{
+										"key": "9",
+										"name": "_c9",
+										"type": "string"
+									},
+									{
+										"key": "10",
+										"name": "_c10",
+										"type": "string"
+									},
+									{
+										"key": "11",
+										"name": "_c11",
+										"type": "string"
+									},
+									{
+										"key": "12",
+										"name": "_c12",
+										"type": "string"
+									},
+									{
+										"key": "13",
+										"name": "_c13",
+										"type": "string"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "count",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/2a51ac90-33eb-4a2e-ba9a-14bf813ba751/resourceGroups/rg-storage/providers/Microsoft.Synapse/workspaces/synapse-wist/bigDataPools/userdatapool",
+				"name": "userdatapool",
+				"type": "Spark",
+				"endpoint": "https://synapse-wist.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/userdatapool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 8,
+				"memory": 56,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"microsoft": {
+						"language": "python"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://datalake2file@storagedatalakewist.dfs.core.windows.net/test/userdata.csv', format='csv'\r\n",
+					"## If header exists uncomment line below\r\n",
+					"##, header=True\r\n",
+					")\r\n",
+					"display(df.limit(10))"
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"print(df.count())"
+				],
+				"execution_count": 2
+			}
+		]
+	}
+}
