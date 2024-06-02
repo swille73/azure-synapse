@@ -2,17 +2,17 @@
 	"name": "Parquet_Mai_2024",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureBlobStorage1",
+			"referenceName": "synapse-wist-WorkspaceDefaultStorage",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
+				"type": "AzureBlobFSLocation",
 				"fileName": "userdata.csv",
 				"folderPath": "2024/Mai",
-				"container": "datalake2file"
+				"fileSystem": "datalake2file"
 			},
 			"compressionCodec": "snappy"
 		},
