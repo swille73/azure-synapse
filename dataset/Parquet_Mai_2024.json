@@ -1,0 +1,21 @@
+{
+	"name": "Parquet_Mai_2024",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "userdata.csv",
+				"folderPath": "2024/Mai",
+				"container": "datalake2file"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	}
+}
