@@ -5,11 +5,20 @@
 		"workspaceName": {
 			"value": "synapse-wist"
 		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
 		"synapse-wist-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:synapse-wist.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
 		"synapse-wist-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"value": "https://storagedatalakewist.dfs.core.windows.net"
+		},
+		"Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowStart": {
+			"value": "@{addhours(trigger().scheduledTime, -24)}"
+		},
+		"Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowEnd": {
+			"value": "@trigger().scheduledTime"
 		}
 	}
 }

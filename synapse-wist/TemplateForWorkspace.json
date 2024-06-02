@@ -7,6 +7,10 @@
 			"metadata": "Workspace name",
 			"defaultValue": "synapse-wist"
 		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
 		"synapse-wist-WorkspaceDefaultSqlServer_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'synapse-wist-WorkspaceDefaultSqlServer'",
@@ -15,12 +19,405 @@
 		"synapse-wist-WorkspaceDefaultStorage_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storagedatalakewist.dfs.core.windows.net"
+		},
+		"Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowStart": {
+			"type": "string",
+			"defaultValue": "@{addhours(trigger().scheduledTime, -24)}"
+		},
+		"Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowEnd": {
+			"type": "string",
+			"defaultValue": "@trigger().scheduledTime"
 		}
 	},
 	"variables": {
 		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/CopyUserdataPipeline')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Daten von Azure Blob Storage to Azure Synapse File",
+				"activities": [
+					{
+						"name": "Copy_vm4",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "datalake2file/test/userdata.csv"
+							},
+							{
+								"name": "Destination",
+								"value": "datalake2file/2024/Mai/userdata.csv"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"maxConcurrentConnections": 1,
+									"recursive": true,
+									"modifiedDatetimeStart": {
+										"value": "@pipeline().parameters.windowStart",
+										"type": "Expression"
+									},
+									"modifiedDatetimeEnd": {
+										"value": "@pipeline().parameters.windowEnd",
+										"type": "Expression"
+									},
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings",
+									"skipLineCount": 0
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings",
+									"maxConcurrentConnections": 1,
+									"copyBehavior": "MergeFiles",
+									"blockSizeInMB": 4
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"validateDataConsistency": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Warning",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "AzureBlobStorage1",
+										"type": "LinkedServiceReference"
+									},
+									"path": "datalake2file/test"
+								}
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_vm4",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_vm4",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"windowStart": {
+						"type": "String"
+					},
+					"windowEnd": {
+						"type": "String"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/SourceDataset_vm4')]",
+				"[concat(variables('workspaceId'), '/datasets/DestinationDataset_vm4')]",
+				"[concat(variables('workspaceId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_vm4')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-wist-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "userdata.csv",
+						"folderPath": "2024/Mai",
+						"fileSystem": "datalake2file"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapse-wist-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Parquet_Mai_2024')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "synapse-wist-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "userdata.csv",
+						"folderPath": "2024/Mai",
+						"fileSystem": "datalake2file"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/synapse-wist-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SourceDataset_vm4')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "userdata.csv",
+						"folderPath": "test",
+						"container": "datalake2file"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Datum",
+						"type": "String"
+					},
+					{
+						"name": "Itemkey",
+						"type": "String"
+					},
+					{
+						"name": "Itemvalue",
+						"type": "String"
+					},
+					{
+						"name": "Itemtyp",
+						"type": "String"
+					},
+					{
+						"name": "Domäne",
+						"type": "String"
+					},
+					{
+						"name": "Modul",
+						"type": "String"
+					},
+					{
+						"name": "Model",
+						"type": "String"
+					},
+					{
+						"name": "User",
+						"type": "String"
+					},
+					{
+						"name": "Session",
+						"type": "String"
+					},
+					{
+						"name": "Version",
+						"type": "String"
+					},
+					{
+						"name": "App",
+						"type": "String"
+					},
+					{
+						"name": "Stadt",
+						"type": "String"
+					},
+					{
+						"name": "Land",
+						"type": "String"
+					},
+					{
+						"name": "Staat",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Userdata')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "userdata.csv",
+						"folderPath": "test",
+						"container": "datalake2file"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Datum",
+						"type": "String"
+					},
+					{
+						"name": "Itemkey",
+						"type": "String"
+					},
+					{
+						"name": "Itemvalue",
+						"type": "String"
+					},
+					{
+						"name": "Itemtyp",
+						"type": "String"
+					},
+					{
+						"name": "Domäne",
+						"type": "String"
+					},
+					{
+						"name": "Modul",
+						"type": "String"
+					},
+					{
+						"name": "Model",
+						"type": "String"
+					},
+					{
+						"name": "User",
+						"type": "String"
+					},
+					{
+						"name": "Session",
+						"type": "String"
+					},
+					{
+						"name": "Version",
+						"type": "String"
+					},
+					{
+						"name": "App",
+						"type": "String"
+					},
+					{
+						"name": "Stadt",
+						"type": "String"
+					},
+					{
+						"name": "Land",
+						"type": "String"
+					},
+					{
+						"name": "Staat",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/AzureBlobStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureBlobStorage1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"description": "Userdaten",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/PowerBIWorkspace1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "PowerBIWorkspace",
+				"typeProperties": {
+					"tenantID": "b2d9adce-df5d-4315-b031-dfc3932ae56c"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('workspaceName'), '/synapse-wist-WorkspaceDefaultSqlServer')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
@@ -65,6 +462,45 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Trigger_vm4')]",
+			"type": "Microsoft.Synapse/workspaces/triggers",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "CopyUserdataPipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"windowStart": {
+								"type": "Expression",
+								"value": "[parameters('Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowStart')]"
+							},
+							"windowEnd": {
+								"type": "Expression",
+								"value": "[parameters('Trigger_vm4_properties_CopyUserdataPipeline_parameters_windowEnd')]"
+							}
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 24,
+						"startTime": "2024-06-02T10:13:00Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/pipelines/CopyUserdataPipeline')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
 			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
 			"apiVersion": "2019-06-01-preview",
@@ -84,12 +520,49 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/IntegrationRuntime1')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "Germany West Central",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 10,
+							"cleanup": false,
+							"customProperties": []
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"type": "ManagedIdentity",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Query CSV files')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "/* Covid-19 ECDC cases opendata set */\n\n/* Read a csv file */\nselect top 10 *\nfrom openrowset(\n    bulk 'https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/ecdc_cases/latest/ecdc_cases.csv',\n    format = 'csv',\n    parser_version = '2.0',\n    firstrow = 2 ) as rows\n\n\n\n/* Explicitly specify schema */\nselect top 10 *\nfrom openrowset(\n        bulk 'https://pandemicdatalake.blob.core.windows.net/public/curated/covid-19/ecdc_cases/latest/ecdc_cases.csv',\n        format = 'csv',\n        parser_version ='2.0',\n        firstrow = 2\n    ) with (\n        date_rep date 1,\n        cases int 5,\n        geo_id varchar(6) 8\n    ) as rows\n\n/* Windows style new line */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '\n'\n    )\nWITH (\n    [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n    [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n    [year] smallint,\n    [population] bigint\n) AS [r]\nWHERE\n    country_name = 'Luxembourg'\n    AND year = 2017;\n\n\n/* Unix-style new line */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '0x0a'\n    )\nWITH (\n    [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n    [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n    [year] smallint,\n    [population] bigint\n) AS [r]\nWHERE\n    country_name = 'Luxembourg'\n    AND year = 2017;\n\n\n/* Header row */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix-hdr/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        FIRSTROW = 2\n    )\n    WITH (\n        [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n        [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n        [year] smallint,\n        [population] bigint\n    ) AS [r]\nWHERE\n    country_name = 'Luxembourg'\n    AND year = 2017;\n\n\n/* Custom quote character */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix-hdr-quoted/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '0x0a',\n        FIRSTROW = 2,\n        FIELDQUOTE = '\"'\n    )\n    WITH (\n        [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n        [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n        [year] smallint,\n        [population] bigint\n    ) AS [r]\nWHERE\n    country_name = 'Luxembourg'\n    AND year = 2017;\n\n\n/* Escape characters */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix-hdr-escape/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '0x0a',\n        FIRSTROW = 2,\n        ESCAPECHAR = ''\n    )\n    WITH (\n        [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n        [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n        [year] smallint,\n        [population] bigint\n    ) AS [r]\nWHERE\n    country_name = 'Slovenia';\n\n\n/* Escape quoting characters */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix-hdr-escape-quoted/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '0x0a',\n        FIRSTROW = 2\n    )\n    WITH (\n        [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n        [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n        [year] smallint,\n        [population] bigint\n    ) AS [r]\nWHERE\n    country_name = 'Slovenia';\n\n\n/* Tab-delimited files */\nSELECT *\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population-unix-hdr-tsv/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR ='\t',\n        ROWTERMINATOR = '0x0a',\n        FIRSTROW = 2\n    )\n    WITH (\n        [country_code] VARCHAR (5) COLLATE Latin1_General_BIN2,\n        [country_name] VARCHAR (100) COLLATE Latin1_General_BIN2,\n        [year] smallint,\n        [population] bigint\n    ) AS [r]\nWHERE\n    country_name = 'Luxembourg'\n    AND year = 2017\n\n\n/* Return a subset of columns */\nSELECT\n    COUNT(DISTINCT country_name) AS countries\nFROM OPENROWSET(\n        BULK 'https://sqlondemandstorage.blob.core.windows.net/public-csv/population/population.csv',\n        FORMAT = 'CSV', PARSER_VERSION = '2.0',\n        FIELDTERMINATOR =',',\n        ROWTERMINATOR = '\n'\n    )\nWITH (\n    --[country_code] VARCHAR (5),\n    [country_name] VARCHAR (100) 2\n    --[year] smallint,\n    --[population] bigint\n) AS [r]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
 			},
 			"dependsOn": []
 		},
@@ -169,7 +642,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "212414ab-2111-4d31-b74e-0a59c9222d44"
+						"spark.autotune.trackingId": "f636d08a-b61c-44f2-9e7a-3b125dbe652b"
 					}
 				},
 				"metadata": {
@@ -194,8 +667,7 @@
 						"sparkVersion": "3.4",
 						"nodeCount": 10,
 						"cores": 8,
-						"memory": 56,
-						"automaticScaleJobs": false
+						"memory": 56
 					},
 					"sessionKeepAliveTimeout": 30
 				},
@@ -217,7 +689,7 @@
 							"display(df.limit(10))"
 						],
 						"outputs": [],
-						"execution_count": 5
+						"execution_count": 56
 					},
 					{
 						"cell_type": "code",
@@ -260,7 +732,7 @@
 							"display(df_att.limit(10))"
 						],
 						"outputs": [],
-						"execution_count": 24
+						"execution_count": 57
 					},
 					{
 						"cell_type": "markdown",
@@ -286,7 +758,8 @@
 								"transient": {
 									"deleting": false
 								}
-							}
+							},
+							"collapsed": false
 						},
 						"source": [
 							"df_sqlserver = df_att.where(df_att[\"Itemkey\"] == \"Dataprovider\")\r\n",
@@ -296,7 +769,7 @@
 							""
 						],
 						"outputs": [],
-						"execution_count": null
+						"execution_count": 58
 					},
 					{
 						"cell_type": "code",
@@ -315,11 +788,87 @@
 						"source": [
 							"import matplotlib as plt\r\n",
 							"\r\n",
-							"data = df_sqlserver.groupBy(\"Itemvalue\").count()\r\n",
-							"data.plot(kind=\"bar\", title=\"Aufteilung Storage\", color=\"pink\")"
+							"data = df_sqlserver.groupBy(\"Itemvalue\").count().toPandas()\r\n",
+							"\r\n",
+							"ax1 = data.plot(kind=\"bar\", title=\"Aufteilung Storage\", color=\"pink\")\r\n",
+							"ax1.set_xlabel('Dataprovider')\r\n",
+							"ax1.set_ylabel('Anzahl')"
 						],
 						"outputs": [],
-						"execution_count": 31
+						"execution_count": 70
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook 3')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "userdatapool",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "56g",
+					"driverCores": 8,
+					"executorMemory": "56g",
+					"executorCores": 8,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "29b18751-c577-4910-ad18-bf531bd429be"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/2a51ac90-33eb-4a2e-ba9a-14bf813ba751/resourceGroups/rg-storage/providers/Microsoft.Synapse/workspaces/synapse-wist/bigDataPools/userdatapool",
+						"name": "userdatapool",
+						"type": "Spark",
+						"endpoint": "https://synapse-wist.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/userdatapool",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 8,
+						"memory": 56
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"microsoft": {
+								"language": "python"
+							}
+						},
+						"source": [
+							"%%pyspark\r\n",
+							"df = spark.read.load('abfss://datalake2file@storagedatalakewist.dfs.core.windows.net/2024/*', format='parquet'\r\n",
+							"## If header exists uncomment line below\r\n",
+							"##, header=True\r\n",
+							")\r\n",
+							"display(df.limit(100))"
+						],
+						"outputs": [],
+						"execution_count": null
 					}
 				]
 			},
