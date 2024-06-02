@@ -1,0 +1,34 @@
+{
+	"name": "Trigger_vm4",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "CopyUserdataPipeline",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"windowStart": {
+						"type": "Expression",
+						"value": "@{addhours(trigger().scheduledTime, -24)}"
+					},
+					"windowEnd": {
+						"type": "Expression",
+						"value": "@trigger().scheduledTime"
+					}
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 24,
+				"startTime": "2024-06-02T10:13:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
