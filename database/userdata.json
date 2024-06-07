@@ -1,0 +1,22 @@
+{
+	"name": "userdata",
+	"properties": {
+		"Name": "userdata",
+		"EntityType": "DATABASE",
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://datalake2file@storagedatalakewist.dfs.core.windows.net/userdata",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "synapse-wist-WorkspaceDefaultStorage"
+			}
+		}
+	},
+	"type": "DATABASE"
+}
