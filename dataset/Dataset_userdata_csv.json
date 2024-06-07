@@ -1,5 +1,5 @@
 {
-	"name": "DestinationDataset_vm4",
+	"name": "Dataset_userdata_csv",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "synapse-wist-WorkspaceDefaultStorage",
