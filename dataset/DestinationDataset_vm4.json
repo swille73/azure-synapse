@@ -10,11 +10,13 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "userdata.csv",
-				"folderPath": "2024/Mai",
+				"folderPath": "2024",
 				"fileSystem": "datalake2file"
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": {
+				"value": ";",
+				"type": "Expression"
+			},
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
