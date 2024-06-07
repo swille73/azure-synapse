@@ -18,7 +18,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "f636d08a-b61c-44f2-9e7a-3b125dbe652b"
+				"spark.autotune.trackingId": "0e9a9a3e-57d4-48ff-a82a-f73fc3e8ec25"
 			}
 		},
 		"metadata": {
@@ -59,13 +59,13 @@
 				},
 				"source": [
 					"%%pyspark\r\n",
-					"df = spark.read.load('abfss://datalake2file@storagedatalakewist.dfs.core.windows.net/test/userdata.csv', format='csv'\r\n",
+					"df = spark.read.load('abfss://datalake2file@storagedatalakewist.dfs.core.windows.net/2024/Mai/userdata_mai.csv', format='csv'\r\n",
 					"## If header exists uncomment line below\r\n",
 					", header=True\r\n",
 					")\r\n",
 					"display(df.limit(10))"
 				],
-				"execution_count": 56
+				"execution_count": 4
 			},
 			{
 				"cell_type": "code",
@@ -81,9 +81,10 @@
 					}
 				},
 				"source": [
-					"print(df.count())"
+					"print(df.count())\r\n",
+					"print(df.describe)"
 				],
-				"execution_count": 6
+				"execution_count": 11
 			},
 			{
 				"cell_type": "code",
@@ -100,13 +101,13 @@
 					"collapsed": false
 				},
 				"source": [
-					"\r\n",
-					"df_att = df.where(df[\"Itemtyp\"] == \"Attribute\")\r\n",
+					"# df_att = df[df[\"ItemType\"] == \"Attribute\"]\r\n",
+					"df_att = df.where(df[\"ItemType\"] == \"Attribute\")\r\n",
 					"df_att\r\n",
 					"print(df_att.count())\r\n",
 					"display(df_att.limit(10))"
 				],
-				"execution_count": 57
+				"execution_count": 14
 			},
 			{
 				"cell_type": "markdown",
@@ -136,13 +137,13 @@
 					"collapsed": false
 				},
 				"source": [
-					"df_sqlserver = df_att.where(df_att[\"Itemkey\"] == \"Dataprovider\")\r\n",
+					"df_sqlserver = df_att.where(df_att[\"ItemKey\"] == \"Dataprovider\")\r\n",
 					"print(df_sqlserver.count())\r\n",
 					"display(df_sqlserver.head(10))\r\n",
 					"\r\n",
 					""
 				],
-				"execution_count": 58
+				"execution_count": 13
 			},
 			{
 				"cell_type": "code",
@@ -161,7 +162,7 @@
 				"source": [
 					"import matplotlib as plt\r\n",
 					"\r\n",
-					"data = df_sqlserver.groupBy(\"Itemvalue\").count().toPandas()\r\n",
+					"data = df_sqlserver.groupBy(\"ItemValue\").count().toPandas()\r\n",
 					"\r\n",
 					"ax1 = data.plot(kind=\"bar\", title=\"Aufteilung Storage\", color=\"pink\")\r\n",
 					"ax1.set_xlabel('Dataprovider')\r\n",
